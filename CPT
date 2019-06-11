@@ -10,6 +10,15 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Better Move Sprite with Keyboard Example"
 
 MOVEMENT_SPEED = 5
+player_loc = [0, 0]
+
+
+keys_pressed = {
+    arcade.key.UP: False,
+    arcade.key.DOWN: False,
+    arcade.key.LEFT: False,
+    arcade.key.RIGHT: False
+}
 
 
 class Player(arcade.Sprite):
@@ -27,7 +36,6 @@ class Player(arcade.Sprite):
             self.bottom = 100
         elif self.top > SCREEN_HEIGHT - 1:
             self.top = SCREEN_HEIGHT - 1
-
 
 class MyGame(arcade.Window):
     """
@@ -76,6 +84,7 @@ class MyGame(arcade.Window):
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 130
         self.player_list.append(self.player_sprite)
+        arcade.set_viewport(-SCREEN_WIDTH / 2, SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, SCREEN_HEIGHT / 2)
 
     def on_draw(self):
         """
@@ -99,14 +108,33 @@ class MyGame(arcade.Window):
         self.player_sprite.change_x = 0
         self.player_sprite.change_y = 0
 
+
         if self.up_pressed and not self.down_pressed:
             self.player_sprite.change_y = MOVEMENT_SPEED
         elif self.down_pressed and not self.up_pressed:
+            self.player_sprite.change_y = -MOVEMENT_SPEED
+
+        else:
             self.player_sprite.change_y = -MOVEMENT_SPEED
         if self.left_pressed and not self.right_pressed:
             self.player_sprite.change_x = -MOVEMENT_SPEED
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = MOVEMENT_SPEED
+
+        if keys_pressed[arcade.key.RIGHT]:
+            player_loc[0] += MOVEMENT_SPEED
+        elif keys_pressed[arcade.key.LEFT]:
+            player_loc[0] -= MOVEMENT_SPEED
+
+        if keys_pressed[arcade.key.UP]:
+            player_loc[1] += MOVEMENT_SPEED
+        elif keys_pressed[arcade.key.DOWN]:
+            player_loc[1] -= MOVEMENT_SPEED
+
+        arcade.set_viewport(-SCREEN_WIDTH / 2 + player_loc[0],
+                            SCREEN_WIDTH / 2 + player_loc[0],
+                            -SCREEN_HEIGHT / 2 + player_loc[1],
+                            SCREEN_HEIGHT / 2 + player_loc[1])
 
         # Call update to move the sprite
         # If using a physics engine, call update on it instead of the sprite
@@ -115,6 +143,7 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
+        global keys_pressed
         if key == arcade.key.UP:
             self.up_pressed = True
         elif key == arcade.key.DOWN:
@@ -124,8 +153,13 @@ class MyGame(arcade.Window):
         elif key == arcade.key.RIGHT:
             self.right_pressed = True
 
+        keys_pressed[key] = True
+
+
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
+        global keys_pressed
+        keys_pressed[key] = False
 
         if key == arcade.key.UP:
             self.up_pressed = False
@@ -146,3 +180,27 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
